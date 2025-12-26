@@ -5,9 +5,15 @@ import { api } from "@shared/routes";
 import { z } from "zod";
 import OpenAI from "openai";
 
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY environment variable is not set");
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+  apiKey: process.env.OPENAI_API_KEY,
+  ...(process.env.OPENAI_API_BASE_URL && {
+    baseURL: process.env.OPENAI_API_BASE_URL,
+  }),
 });
 
 export async function registerRoutes(
