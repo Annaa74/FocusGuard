@@ -1,38 +1,29 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  focusSessions,
+  focusLogs,
+  type InsertFocusSession,
+  type InsertFocusLog,
+  type FocusSession,
+  type FocusLog
+} from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createSession(session: InsertFocusSession): Promise<FocusSession>;
+  logAnalysis(log: InsertFocusLog): Promise<FocusLog>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async createSession(session: InsertFocusSession): Promise<FocusSession> {
+    const [newSession] = await db.insert(focusSessions).values(session).returning();
+    return newSession;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async logAnalysis(log: InsertFocusLog): Promise<FocusLog> {
+    const [newLog] = await db.insert(focusLogs).values(log).returning();
+    return newLog;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
