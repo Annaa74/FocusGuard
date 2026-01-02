@@ -108,11 +108,4 @@ package.json            # scripts & deps
 - Chrome extension dev: https://developer.chrome.com/docs/extensions/
 
 ---
-
-## 📄 License
-
-MIT
-
----
-
-If you'd like, I can add a `Contributing` checklist, example environment files, or a short demo GIF for the README.
+ 
